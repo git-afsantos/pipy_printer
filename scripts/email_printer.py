@@ -98,7 +98,7 @@ class EmailPrinter(object):
         for friend in self.friends:
             logging.debug("Fetching messages for {}".format(friend))
             msgs = self.gmail.inbox().mail(unread = True, sender = friend)
-            if ms:
+            if msgs:
                 for msg in msgs:
                     msg.fetch()
                     self._execute_friend_command(msg)
