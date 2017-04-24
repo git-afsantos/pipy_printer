@@ -3,6 +3,7 @@
 import cups
 import codecs
 from datetime import datetime
+import imaplib
 import logging
 import os
 import shutil
@@ -70,10 +71,10 @@ class EmailPrinter(object):
         self.printer = cups.Connection()
         self.printer.setPrinterErrorPolicy(PRINTER_NAME, "abort-job")
         logging.debug("Printer connection established.")
-        self._iterate()
+        self._iterate(retry = 3)
         for i in xrange(3):  # every ~15 mins
             time.sleep(14 * 60)
-            self._iterate()
+            self._iterate(retry = 3)
         self.logout()
         self.printer = None
 
@@ -83,12 +84,19 @@ class EmailPrinter(object):
             body = f.read()
         self._send_email("Traceback " + now_string(), body)
 
-    def _iterate(self):
+    def _iterate(self, retry = 0):
         if self.login():
             try:
                 logging.debug("Iterating at {}".format(now_string()))
                 self._prepare_printer()
                 self._fetch_friend_messages()
+            except imaplib.IMAP4.abort as ia:
+                self.logout()
+                if retry > 0:
+                    self._iterate(retry = retry - 1)
+                else:
+                    self.error_state = True
+                    logging.exception("IMAP abort during iteration.")
             except Exception as e:
                 self.error_state = True
                 logging.exception("Exception during iteration.")
@@ -131,7 +139,7 @@ class EmailPrinter(object):
                 with codecs.open(fid, "w", encoding = "utf-8") as f:
                     f.write(unicode(msg.body, "utf-8").strip())
                 self.printer.printFile(PRINTER_NAME, fid, "PYTHON GMAIL", {})
-                time.sleep(5)
+                time.sleep(8)
             for attachment in msg.attachments:
                 if not attachment.name is None:
                     attachment.name = "".join(attachment.name.split())
