@@ -73,6 +73,7 @@ class EmailPrinter(object):
         logging.debug("Printer connection established.")
         self._iterate(retry = 3)
         for i in xrange(3):  # every ~15 mins
+            logging.debug("Sleeping for 14 minutes.")
             time.sleep(14 * 60)
             self._iterate(retry = 3)
         self.logout()
@@ -100,6 +101,8 @@ class EmailPrinter(object):
             except Exception as e:
                 self.error_state = True
                 logging.exception("Exception during iteration.")
+        else:
+            logging.debug("Iteration could not log in.")
 
     def _fetch_friend_messages(self):
         logging.info("Fetching friend messages.")
