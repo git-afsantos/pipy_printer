@@ -31,7 +31,7 @@ Subject: {}
 
 {}
 --
-Raspberry Pi 3
+Raspberry Pi 3 (v0.1)
 """
 
 def now_string():
@@ -79,11 +79,14 @@ class EmailPrinter(object):
         self.logout()
         self.printer = None
 
-    def send_report(self):
+    def send_report(self, err_type=None):
         body = "Error report"
         with open(LOG, "r") as f:
             body = f.read()
-        self._send_email("Traceback " + now_string(), body)
+        if err_type:
+            self._send_email("Traceback " + err_type + " " + now_string(), body)
+        else:
+            self._send_email("Traceback " + now_string(), body)
 
     def _iterate(self, retry = 0):
         if self.login():
@@ -209,7 +212,7 @@ def main():
             os.remove(LOG)
     except Exception as e:
         try:
-            email_printer._send_email("Initialization error", str(e))
+            email_printer._send_email("Initialization error", repr(e))
         except Exception as ee:
             return 1
     logging.basicConfig(filename = LOG, level = logging.DEBUG)
@@ -218,7 +221,7 @@ def main():
         email_printer.hourly_loop()
         logging.info("Hourly loop complete.")
     except Exception as e:
-        logging.exception("Uncaught exception.")
+        logging.exception("Uncaught exception: " + repr(e))
         email_printer.error_state = True
     finally:
         logging.shutdown()
