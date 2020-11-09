@@ -199,11 +199,21 @@ def self_update():
 def main():
     has_previous = os.path.isfile(LOG)
     email_printer = EmailPrinter()
-    logging.basicConfig(filename = LOG, level = logging.DEBUG)
+    init_error = None
     try:
         if has_previous:
             email_printer.send_report()
+            os.remove(LOG)
+    except Exception as e:
+        try:
+            email_printer._send_email("Initialization error", str(e))
+        except Exception as ee:
+            return 1
+    logging.basicConfig(filename = LOG, level = logging.DEBUG)
+    logging.info("Initialization complete.")
+    try:
         email_printer.hourly_loop()
+        logging.info("Hourly loop complete.")
     except Exception as e:
         logging.exception("Uncaught exception.")
         email_printer.error_state = True
