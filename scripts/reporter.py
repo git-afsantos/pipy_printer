@@ -41,7 +41,7 @@ class LogReporter(object):
                 part = MIMEApplication(f.read(), Name=filename)
             part["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
             msg.attach(part)
-        server.sendmail(self.email, self.friends, msg.as_string())
+        self.server.sendmail(self.email, self.friends, msg.as_string())
 
     def login(self):
         with open(CREDENTIALS, "r") as handle:
