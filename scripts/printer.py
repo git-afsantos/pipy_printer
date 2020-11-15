@@ -74,13 +74,13 @@ def print_files(printer):
 
 def main():
     # https://stackoverflow.com/a/7758075
-    socket = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+    the_socket = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
     try:
         # The null byte (\0) means the socket is created
         # in the abstract namespace instead of being created
         # on the file system itself.
         # Works only in Linux.
-        socket.bind("\0" + PROC_NAME)
+        the_socket.bind("\0" + PROC_NAME)
     except socket.error:
         # lock exists
         return 1
