@@ -71,11 +71,12 @@ def main():
         try:
             with LogReporter() as reporter:
                 reporter.send_report()
+        except Exception as e:
+            return 1
+        finally:
             os.remove(TOKEN)
             os.remove(EMAIL_LOG)
             os.remove(PRINT_LOG)
-        except Exception as e:
-            return 1
     return 0
 
 
