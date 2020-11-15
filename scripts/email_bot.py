@@ -43,7 +43,7 @@ class EmailSender(object):
         logging.debug("Logging in to SMTP server with " + self.email)
         self.server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
         self.server.ehlo()
-        self.server.login(self.email, self.password)
+        self.server.login(self.email, password)
         self.logged_in = True
 
     def logout(self):
