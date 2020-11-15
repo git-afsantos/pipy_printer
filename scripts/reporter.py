@@ -76,7 +76,7 @@ def main():
         finally:
             os.remove(TOKEN)
             os.remove(EMAIL_LOG)
-            os.remove(PRINT_LOG)
+            os.remove(PRINTER_LOG)
     return 0
 
 
